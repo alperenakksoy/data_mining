@@ -1,0 +1,73 @@
+,location,split,features,predictor,subset,precision,recall,f1,positives,n
+0,Organ,2025-03-01,all inputs,model,all,0.982,0.942,0.962,932,6458
+1,Organ,2025-03-01,-,persistence,all,0.999,0.903,0.949,932,6458
+2,Organ,2025-03-01,-,above LIM now,all,0.907,0.929,0.918,932,6458
+3,Organ,2025-03-01,all inputs,model,onset,0.706,0.4,0.511,90,5615
+4,Organ,2025-03-01,-,persistence,onset,0.0,0.0,0.0,90,5615
+5,Organ,2025-03-01,-,above LIM now,onset,0.214,0.267,0.238,90,5615
+6,Organ,2025-03-01,no rule ingredients,model,all,0.536,1.0,0.698,932,6458
+7,Organ,2025-03-01,no rule ingredients,model,onset,0.1,1.0,0.183,90,5615
+8,Organ,2025-05-01,all inputs,model,all,0.932,1.0,0.965,932,4999
+9,Organ,2025-05-01,-,persistence,all,0.999,0.903,0.949,932,4999
+10,Organ,2025-05-01,-,above LIM now,all,0.907,0.929,0.918,932,4999
+11,Organ,2025-05-01,all inputs,model,onset,0.573,1.0,0.729,90,4156
+12,Organ,2025-05-01,-,persistence,onset,0.0,0.0,0.0,90,4156
+13,Organ,2025-05-01,-,above LIM now,onset,0.214,0.267,0.238,90,4156
+14,Organ,2025-05-01,no rule ingredients,model,all,0.536,1.0,0.698,932,4999
+15,Organ,2025-05-01,no rule ingredients,model,onset,0.1,1.0,0.183,90,4156
+16,Organ,2025-07-01,all inputs,model,all,0.932,1.0,0.965,932,3535
+17,Organ,2025-07-01,-,persistence,all,0.999,0.903,0.949,932,3535
+18,Organ,2025-07-01,-,above LIM now,all,0.907,0.929,0.918,932,3535
+19,Organ,2025-07-01,all inputs,model,onset,0.573,1.0,0.729,90,2692
+20,Organ,2025-07-01,-,persistence,onset,0.0,0.0,0.0,90,2692
+21,Organ,2025-07-01,-,above LIM now,onset,0.214,0.267,0.238,90,2692
+22,Organ,2025-07-01,no rule ingredients,model,all,0.536,1.0,0.698,932,3535
+23,Organ,2025-07-01,no rule ingredients,model,onset,0.1,1.0,0.183,90,2692
+24,Art objects S,2025-03-01,all inputs,model,all,0.859,0.963,0.908,955,6458
+25,Art objects S,2025-03-01,-,persistence,all,0.996,0.758,0.861,955,6458
+26,Art objects S,2025-03-01,-,above LIM now,all,0.587,0.835,0.689,955,6458
+27,Art objects S,2025-03-01,all inputs,model,onset,0.57,0.848,0.682,231,5731
+28,Art objects S,2025-03-01,-,persistence,onset,0.0,0.0,0.0,231,5731
+29,Art objects S,2025-03-01,-,above LIM now,onset,0.116,0.316,0.17,231,5731
+30,Art objects S,2025-03-01,no rule ingredients,model,all,0.507,1.0,0.673,955,6458
+31,Art objects S,2025-03-01,no rule ingredients,model,onset,0.2,1.0,0.333,231,5731
+32,Art objects S,2025-05-01,all inputs,model,all,0.858,0.974,0.912,955,4999
+33,Art objects S,2025-05-01,-,persistence,all,0.996,0.758,0.861,955,4999
+34,Art objects S,2025-05-01,-,above LIM now,all,0.597,0.835,0.696,955,4999
+35,Art objects S,2025-05-01,all inputs,model,onset,0.577,0.892,0.701,231,4272
+36,Art objects S,2025-05-01,-,persistence,onset,0.0,0.0,0.0,231,4272
+37,Art objects S,2025-05-01,-,above LIM now,onset,0.12,0.316,0.174,231,4272
+38,Art objects S,2025-05-01,no rule ingredients,model,all,0.502,1.0,0.668,955,4999
+39,Art objects S,2025-05-01,no rule ingredients,model,onset,0.196,1.0,0.328,231,4272
+40,Art objects S,2025-07-01,all inputs,model,all,0.858,0.974,0.912,955,3535
+41,Art objects S,2025-07-01,-,persistence,all,0.996,0.758,0.861,955,3535
+42,Art objects S,2025-07-01,-,above LIM now,all,0.652,0.835,0.732,955,3535
+43,Art objects S,2025-07-01,all inputs,model,onset,0.577,0.892,0.701,231,2808
+44,Art objects S,2025-07-01,-,persistence,onset,0.0,0.0,0.0,231,2808
+45,Art objects S,2025-07-01,-,above LIM now,onset,0.147,0.316,0.201,231,2808
+46,Art objects S,2025-07-01,no rule ingredients,model,all,0.51,1.0,0.676,955,3535
+47,Art objects S,2025-07-01,no rule ingredients,model,onset,0.202,1.0,0.336,231,2808
+48,Basement,2025-03-01,all inputs,model,all,0.999,0.926,0.961,3984,6458
+49,Basement,2025-03-01,-,persistence,all,0.999,0.926,0.961,3984,6458
+50,Basement,2025-03-01,-,above LIM now,all,0.917,0.952,0.934,3984,6458
+51,Basement,2025-03-01,all inputs,model,onset,0.0,0.0,0.0,293,2762
+52,Basement,2025-03-01,-,persistence,onset,0.0,0.0,0.0,293,2762
+53,Basement,2025-03-01,-,above LIM now,onset,0.231,0.348,0.278,293,2762
+54,Basement,2025-03-01,no rule ingredients,model,all,0.869,0.968,0.916,3984,6458
+55,Basement,2025-03-01,no rule ingredients,model,onset,0.231,0.59,0.332,293,2762
+56,Basement,2025-05-01,all inputs,model,all,0.855,1.0,0.922,3641,4999
+57,Basement,2025-05-01,-,persistence,all,0.999,0.943,0.97,3641,4999
+58,Basement,2025-05-01,-,above LIM now,all,0.939,0.965,0.952,3641,4999
+59,Basement,2025-05-01,all inputs,model,onset,0.252,1.0,0.402,207,1561
+60,Basement,2025-05-01,-,persistence,onset,0.0,0.0,0.0,207,1561
+61,Basement,2025-05-01,-,above LIM now,onset,0.258,0.377,0.306,207,1561
+62,Basement,2025-05-01,no rule ingredients,model,all,0.927,0.959,0.943,3641,4999
+63,Basement,2025-05-01,no rule ingredients,model,onset,0.226,0.382,0.284,207,1561
+64,Basement,2025-07-01,all inputs,model,all,0.887,0.991,0.936,2780,3535
+65,Basement,2025-07-01,-,persistence,all,0.999,0.955,0.977,2780,3535
+66,Basement,2025-07-01,-,above LIM now,all,0.943,0.975,0.958,2780,3535
+67,Basement,2025-07-01,all inputs,model,onset,0.223,0.806,0.349,124,877
+68,Basement,2025-07-01,-,persistence,onset,0.0,0.0,0.0,124,877
+69,Basement,2025-07-01,-,above LIM now,onset,0.249,0.435,0.317,124,877
+70,Basement,2025-07-01,no rule ingredients,model,all,0.943,0.964,0.954,2780,3535
+71,Basement,2025-07-01,no rule ingredients,model,onset,0.251,0.435,0.319,124,877

@@ -1,0 +1,9 @@
+location,mean |1 h change| during organ events (°C),"mean |1 h change| otherwise, heating season (°C)",valid event readings
+Art objects S,1.55,0.48,74
+South wall,1.2,0.12,34
+East wall,1.37,0.14,34
+North wall,1.72,0.19,16
+Art objects NW,0.3,0.05,57
+Attic,0.64,0.51,64
+Basement,0.02,0.03,62
+Outside,0.66,0.44,73

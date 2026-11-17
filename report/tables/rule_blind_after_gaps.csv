@@ -1,0 +1,9 @@
+location,readings above LIM with too little history,as share of readings above LIM
+Organ,0,0.0
+North wall,32,0.01
+South wall,0,0.0
+East wall,0,0.0
+Art objects NW,0,0.0
+Art objects S,0,0.0
+Attic,35,0.004
+Basement,251,0.01

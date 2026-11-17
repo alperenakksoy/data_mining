@@ -1,0 +1,12 @@
+step,values,reason
+drop_columns,49032,technical InfluxDB export columns
+missing_code,575903,logger missing value code
+trim,44,no sensor reported
+commissioning,366,sensors still at the installation bench
+manual_exclusion,224,organ air sensor not yet in final position (step change without surface response)
+physical_fix,31587,sensor saturation
+spike,14,isolated sensor glitch (temperature and humidity jump and return)
+warmup,156,sensor settling after installation / outage
+sun_flag,295,suspected direct sun on the sensor
+timezone,48971,local time for daily patterns
+interpolate,3284,short transmission gaps

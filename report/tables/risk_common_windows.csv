@@ -1,0 +1,9 @@
+location,A: share high,A: share medium,A: rank,B: share high,B: share medium,B: rank
+North wall,0.0,0.0005,7.0,0.4867,0.1534,2.0
+East wall,0.0,0.001,6.0,0.1513,0.1483,7.0
+South wall,0.0,0.0,8.0,0.1811,0.145,6.0
+Attic,0.2548,0.1877,2.0,0.2727,0.1254,5.0
+Art objects NW,0.0459,0.2068,3.0,,,
+Art objects S,0.0,0.0614,5.0,0.3996,0.1764,4.0
+Basement,0.2806,0.1372,1.0,0.8708,0.0501,1.0
+Organ,0.0,0.1264,4.0,0.4709,0.062,3.0

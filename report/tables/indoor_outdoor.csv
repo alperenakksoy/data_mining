@@ -1,0 +1,9 @@
+,mean temp inside - outside (°C),winter (DJF),summer (JJA),mean abs. humidity inside - outside (g/m³),share of time outside air is drier (abs.)
+Organ,1.49,4.67,-0.66,-0.43,0.42
+North wall,2.39,3.43,,-0.22,0.42
+South wall,0.88,2.91,-0.89,-0.61,0.35
+East wall,0.99,3.21,-0.82,-0.6,0.36
+Art objects NW,0.63,3.01,-2.07,-0.16,0.5
+Art objects S,1.52,3.68,0.23,-0.34,0.42
+Attic,1.38,0.18,2.53,-1.03,0.09
+Basement,0.02,1.99,-2.61,0.14,0.57

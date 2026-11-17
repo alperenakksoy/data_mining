@@ -1,0 +1,9 @@
+location,valid hours,critical hours (cumulative),critical share,episodes above LIM,episodes ≥ 24 h,longest episode (days),median episode (h),max 30-day share
+Organ,16302.67,2871.33,0.18,146,12,45.65,2.33,1.0
+North wall,2713.67,1044.0,0.38,58,9,12.64,0.67,0.9
+South wall,8797.0,1838.67,0.21,137,18,8.96,0.67,0.92
+East wall,8110.33,1019.67,0.13,113,10,7.1,1.0,0.57
+Art objects NW,10242.67,5542.33,0.54,147,34,44.83,2.67,1.0
+Art objects S,16323.33,3904.0,0.24,316,30,7.81,8.0,0.92
+Attic,15819.33,3069.0,0.19,233,32,7.21,4.67,0.82
+Basement,13256.33,8229.67,0.62,86,41,47.26,17.17,1.0
