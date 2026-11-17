@@ -263,8 +263,8 @@ results.update(plaus_north_margin=float(plaus.loc[names["AWn"], "mean dew point 
 #   objects are in the top 2, and the east wall is always in the bottom three (rank 6–8).
 #   The Spearman correlation with the default ranking is at least 0.66 (median 0.82). The
 #   middle of the ranking (organ, north wall, south art objects) swaps places depending on the
-#   thresholds. Absolute shares depend strongly on the thresholds (LIM class II roughly
-#   halves them), so the client story communicates **relative priorities and periods**, not
+#   thresholds. Absolute shares depend strongly on the thresholds (LIM class II lowers the
+#   scores by 25–90 %), so the client story communicates **relative priorities and periods**, not
 #   exact percentages.
 # * **North vs south (identical readings).** The north wall's surface is clearly colder
 #   *relative to the room air* (−0.40 vs −0.21 °C), its dew point margin is smaller

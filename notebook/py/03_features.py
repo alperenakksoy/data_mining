@@ -126,7 +126,8 @@ results.save_table(lim_tab, "lim_shares")
 
 # %% [markdown]
 # **Decision:** the basement and the north-west art objects exceed the class I limit
-# for a large part of the time; class II roughly halves the shares but keeps the order.
+# for a large part of the time; class II lowers the shares (strongly at the walls, by
+# about a fifth to a third at the basement and art objects) but keeps the order.
 # Class I stays the default (conservative, appropriate for dusty surfaces and art
 # objects). The surface basis raises the shares compared with room air at the organ and
 # the north wall, because their surfaces are colder than the air (next section).
