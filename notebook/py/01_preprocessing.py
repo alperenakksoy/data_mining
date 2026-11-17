@@ -106,6 +106,8 @@ desc.round(2)
 df, clog, longest = L.clean(raw)
 print("clean shape:", df.shape, "| index:", df.index.dtype, "| from", df.index.min(), "to", df.index.max())
 summary_log = clog[clog.n_values > 0].groupby(["step", "action"])["n_values"].sum().to_frame()
+step_tab = clog[clog.n_values > 0].groupby("step", sort=False).agg(values=("n_values", "sum"), reason=("reason", "first"))
+results.save_table(step_tab, "preprocessing_steps")
 summary_log
 
 # %% [markdown]
@@ -154,34 +156,76 @@ results.update(magnus_max_diff=float(magnus.max().max()))
 # temperature and humidity we *recompute* absolute humidity and dew point instead of
 # interpolating them separately (keeps the physics consistent).
 #
-# ### 3c · Sensor warm-up after installation and outages
+# ### 3c · Installation day, sensor relocation, glitches and warm-up
 #
-# Right after installation (19 Jan 2024) and after long outages several sensors report a
-# value far from the room and relax exponentially within about an hour. Example: the
-# organ sensor starts at 24.8 °C and falls to 18.7 °C in one hour, while the church is at
-# about 10 °C. This is the sensor adapting, not the room. Left in the data it would create
-# false rapid-change events at the organ.
+# Plotting the raw signals around unusual jumps reveals four kinds of artefacts that
+# are not room climate:
+#
+# 1. **Installation bench (19 Jan 2024 until 13:40).** All sensors read 19–24 °C at the
+#    same time, then fall to room values within an hour. → rows removed (commissioning).
+# 2. **Organ air sensor not yet in place (until 20 Jan 2024 08:20).** It reads 3.5 °C above
+#    its own surface sensor, then drops by 2.7 °C within 20 minutes while the surface
+#    temperature does not change at all → relocation of the air sensor; air values excluded
+#    (documented in `config.MANUAL_EXCLUSIONS`).
+# 3. **Isolated glitches at the organ.** For one single reading the air temperature drops by
+#    1–2.5 °C *and* the humidity jumps by about 10 %, and both return at the next reading,
+#    mostly at night without heating; the surface sensor shows nothing, and some glitch
+#    values are suspiciously round (exactly 11.00 or 12.00 °C). Each glitch would create two
+#    false organ events (one cooling, one warming). → set to NaN when temperature *and*
+#    humidity both spike (temperature-only spikes at the sun-exposed south art objects are
+#    real and kept).
+# 4. **Warm-up after outages.** After a restart following ≥ 6 h without data, sensors relax
+#    towards room values within about an hour (basement 26 Jul 2024: 23.5 → 18.6 °C). → the
+#    first 6 readings (2 h) after each restart are removed.
 
 # %%
 raw_min = L.load_raw_minimal()
-fig, axes = plt.subplots(1, 3, figsize=(13, 3.2))
-for ax, (s, start) in zip(axes, [("O1", "2024-01-19 09:00"), ("Ke1", "2024-07-26 09:00"), ("AWo", "2025-09-05 09:00")]):
-    t0 = pd.Timestamp(start, tz=C.LOCAL_TZ)
-    w = raw_min.loc[t0:t0 + pd.Timedelta("8h"), f"temp_{s}"]
-    fl = df.loc[w.index, f"flag_warmup_{s}"]
-    ax.plot(w.index, w, color=P.SERIES[0], marker="o", ms=3, label="raw reading")
-    ax.plot(w.index[fl], w[fl], "o", color=P.STATUS["high"], ms=6, label="removed (warm-up)")
-    ax.set_title(f"{P.name(s)}: sensor settles after restart")
-    ax.set_ylabel("Air temperature (°C)")
-    ax.tick_params(axis="x", rotation=30)
-axes[0].legend()
-plt.tight_layout(); P.save(fig, "01_warmup.png"); plt.show()
-print(clog[clog.step == "warmup"][["column", "n_values", "action"]].to_string(index=False))
+fig, axes = plt.subplots(2, 2, figsize=(13, 7))
+t0, t1 = pd.Timestamp("2024-01-19 08:00", tz=C.LOCAL_TZ), pd.Timestamp("2024-01-20 14:00", tz=C.LOCAL_TZ)
+ax = axes[0, 0]
+for c, lab, col in [("temp_O1", "Organ air", P.SERIES[0]), ("surf_temp_O1", "Organ surface", P.SERIES[2]),
+                    ("temp_K2", "Art objects S air", P.SERIES[1]), ("temp_AU", "Outside air", P.SERIES[8])]:
+    w = raw_min.loc[t0:t1, c]
+    ax.plot(w.index, w, label=lab, color=col)
+ax.axvspan(t0, pd.Timestamp(C.COMMISSIONING_END, tz=C.LOCAL_TZ), color=P.STATUS["unknown"], alpha=0.4, lw=0)
+ax.axvspan(pd.Timestamp(C.COMMISSIONING_END, tz=C.LOCAL_TZ), pd.Timestamp("2024-01-20 08:30", tz=C.LOCAL_TZ),
+           color=P.STATUS["medium"], alpha=0.25, lw=0)
+ax.text(t0, 23, " bench", fontsize=8.5); ax.text(pd.Timestamp("2024-01-19 16:00", tz=C.LOCAL_TZ), 21, "organ air sensor\nnot in place", fontsize=8.5)
+ax.set_title("Installation day: sensors read the bench, then the church"); ax.set_ylabel("Temperature (°C)")
+ax.legend(fontsize=8, loc="upper right"); ax.tick_params(axis="x", rotation=30)
+
+g0, g1 = pd.Timestamp("2024-11-08 02:00", tz=C.LOCAL_TZ), pd.Timestamp("2024-11-08 07:00", tz=C.LOCAL_TZ)
+for ax, c, lab in [(axes[0, 1], "temp_O1", "Organ air temperature (°C)"), (axes[1, 0], "rh_O1", "Organ relative humidity (%)")]:
+    w = raw_min.loc[g0:g1, c]
+    fl = df["flag_spike_O1"].reindex(w.index, fill_value=False)
+    ax.plot(w.index, w, marker="o", ms=3, color=P.SERIES[0], label="raw reading")
+    ax.plot(w.index[fl], w[fl], "o", ms=8, color=P.STATUS["high"], label="removed (glitch)")
+    ax.set_ylabel(lab); ax.tick_params(axis="x", rotation=30)
+axes[0, 1].set_title("Organ glitch: temperature drops for one reading ..."); axes[0, 1].legend(fontsize=8)
+axes[1, 0].set_title("... and humidity jumps at the same moment")
+
+ax = axes[1, 1]
+r0 = pd.Timestamp("2024-07-26 09:00", tz=C.LOCAL_TZ)
+w = raw_min.loc[r0:r0 + pd.Timedelta("8h"), "temp_Ke1"]
+fl = df["flag_warmup_Ke1"].reindex(w.index, fill_value=False)
+ax.plot(w.index, w, color=P.SERIES[0], marker="o", ms=3, label="raw reading")
+ax.plot(w.index[fl], w[fl], "o", color=P.STATUS["high"], ms=7, label="removed (warm-up)")
+ax.set_title("Basement: sensor settles after a 4-month outage"); ax.set_ylabel("Air temperature (°C)")
+ax.legend(fontsize=8); ax.tick_params(axis="x", rotation=30)
+plt.tight_layout(); P.save(fig, "01_artefacts.png"); plt.show()
+
+print(clog[clog.step.isin(["commissioning", "manual_exclusion", "spike", "warmup"]) & (clog.n_values > 0)]
+      [["step", "column", "n_values", "action"]].to_string(index=False))
+print("organ glitches:", [str(t) for t in df.index[df["flag_spike_O1"]]])
+results.update(n_spikes=int(df.filter(like="flag_spike").sum().sum()),
+               n_warmup=int(clog.query("step=='warmup'").n_values.sum()),
+               n_manual=int(clog.query("step=='manual_exclusion'").n_values.sum()))
 
 # %% [markdown]
-# **Decision:** after a sensor (re)start following a gap of at least 6 h, the first
-# 6 readings (2 h) are set to `NaN` and flagged (`flag_warmup_*`). This removes
-# 195 readings in total (mostly the patchy attic sensor) and is logged.
+# **Decision:** all four artefact types are removed (set to `NaN`, logged and flagged with
+# `flag_manual_*`, `flag_spike_*`, `flag_warmup_*`). Single removed glitch readings are
+# later filled by the 1-hour interpolation (and additionally flagged as interpolated). In
+# notebook 05 we show how much these steps change the organ event count.
 #
 # ### 3d · Stuck sensors
 #

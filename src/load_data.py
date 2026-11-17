@@ -12,10 +12,12 @@ Steps (each one is logged in ``data/processed/preprocessing_log.csv``):
 4.  rename columns to short English names (``temp_O1``, ``rh_AWn`` ...)
 5.  replace the missing code ``-255`` with NaN
 6.  trim leading / trailing rows without any measurement
-7.  plausibility ranges (out of range -> NaN)
+7.  commissioning period and documented manual exclusions -> NaN / removed
+7b. plausibility ranges (out of range -> NaN)
 8.  physical fixes: relative humidity > 100 % clipped, dew point <= air
     temperature, absolute humidity recomputed (flagged)
-9.  sensor warm-up after a (re)start -> NaN (flagged)
+8b. isolated joint temperature + humidity glitches -> NaN (flagged)
+9.  sensor warm-up after a restart -> NaN (flagged)
 10. stuck-sensor check (long runs of identical values -> NaN)
 11. flag suspected direct sun on the outside sensor (values kept)
 12. convert the index to Europe/Berlin
@@ -162,8 +164,60 @@ def basic_parse(raw: pd.DataFrame, clog: ChangeLog) -> pd.DataFrame:
     return df
 
 
+def commissioning(df: pd.DataFrame, clog: ChangeLog) -> pd.DataFrame:
+    """Step 7: remove the installation period and apply documented manual exclusions.
+
+    Until 13:40 local time on 19 Jan 2024 every sensor reads 19-24 degC at the
+    same time (installation bench), so these rows do not describe the church.
+    Manual exclusions are listed with their reason in ``config.MANUAL_EXCLUSIONS``.
+    """
+    cut = pd.Timestamp(C.COMMISSIONING_END, tz=C.LOCAL_TZ).tz_convert("UTC")
+    n = int((df.index < cut).sum())
+    n_vals = int(df.loc[df.index < cut].notna().sum().sum())
+    df = df.loc[df.index >= cut].copy()
+    clog.add("commissioning", "all", n_vals, f"{n} rows before {C.COMMISSIONING_END} local removed",
+             "sensors still at the installation bench")
+    for ex in C.MANUAL_EXCLUSIONS:
+        a = pd.Timestamp(ex["start"], tz=C.LOCAL_TZ).tz_convert("UTC")
+        b = pd.Timestamp(ex["end"], tz=C.LOCAL_TZ).tz_convert("UTC")
+        cols = [f"{m}_{ex['sensor']}" for m in ex["measures"]]
+        rows = (df.index >= a) & (df.index <= b)
+        n_vals = int(df.loc[rows, cols].notna().sum().sum())
+        df.loc[rows, cols] = np.nan
+        df[f"flag_manual_{ex['sensor']}"] = rows
+        clog.add("manual_exclusion", ",".join(cols), n_vals, f"{ex['start']} - {ex['end']} -> NaN", ex["reason"])
+    return df
+
+
+def spikes(df: pd.DataFrame, clog: ChangeLog) -> pd.DataFrame:
+    """Step 8b: remove isolated glitches where temperature and humidity jump together.
+
+    A reading is a glitch if its air temperature deviates by more than
+    ``SPIKE_TEMP`` and its relative humidity by more than ``SPIKE_RH`` from the
+    mean of both neighbours, both neighbours agree with each other, and the
+    signal returns at the next reading. A real 1-2 degC drop of the room air for
+    20 minutes in a massive church at night, without any response of the
+    surface sensor, is not physical. Some glitch values are suspiciously round
+    (exactly 11.00 or 12.00 degC). Each such glitch would create two false
+    organ events.
+    """
+    def is_spike(x: pd.Series, thr: float) -> pd.Series:
+        prev, nxt = x.shift(1), x.shift(-1)
+        dev = x - (prev + nxt) / 2
+        return (dev.abs() > thr) & ((nxt - prev).abs() < dev.abs() / 2) & (np.sign(x - prev) != np.sign(nxt - x))
+
+    for s in C.SENSORS:
+        bad = is_spike(df[f"temp_{s}"], C.SPIKE_TEMP) & is_spike(df[f"rh_{s}"], C.SPIKE_RH)
+        cols = [f"{m}_{s}" for m in ("temp", "rh", "abs_hum", "dew_point")]
+        df.loc[bad, cols] = np.nan
+        df[f"flag_spike_{s}"] = bad.to_numpy()
+        clog.add("spike", f"temp_{s},rh_{s}", bad.sum(), "joint single-reading glitch -> NaN",
+                 "isolated sensor glitch (temperature and humidity jump and return)")
+    return df
+
+
 def plausibility(df: pd.DataFrame, clog: ChangeLog) -> pd.DataFrame:
-    """Step 7: set values outside physically plausible ranges to NaN."""
+    """Step 7b: set values outside physically plausible ranges to NaN."""
     for c in measurement_columns(df):
         lo, hi = C.PLAUSIBLE[measure_of(c)]
         bad = (df[c] < lo) | (df[c] > hi)
@@ -202,13 +256,14 @@ def physical_fixes(df: pd.DataFrame, clog: ChangeLog) -> pd.DataFrame:
 
 
 def warmup_artifacts(df: pd.DataFrame, clog: ChangeLog) -> pd.DataFrame:
-    """Step 9: remove the settling period after a sensor (re)start.
+    """Step 9: remove the settling period after a sensor restart.
 
-    After installation (19 Jan 2024) and after long outages the sensors first
-    report the temperature of the place they came from and then relax towards
-    the room value over about one hour (for example the organ: 24.8 -> 18.7 degC
-    within one hour while the room was at about 10 degC). These readings do not
-    describe the church and would create false organ events.
+    After long outages the sensors first report a value far from the room and
+    then relax towards the room value within about an hour (for example the
+    basement on 26 Jul 2024: 23.5 -> 18.6 degC, the east wall on 5 Sep 2025:
+    24.2 -> 19.7 degC). These readings do not describe the church and would
+    create false rapid-change events. (The installation day itself is handled
+    by the commissioning step.)
     """
     for s in C.SENSORS:
         cols = sensor_columns(df, s)
@@ -216,8 +271,6 @@ def warmup_artifacts(df: pd.DataFrame, clog: ChangeLog) -> pd.DataFrame:
         valid = df[key].notna()
         gaps = run_lengths(~valid)
         restart_idx = []
-        first = int(np.argmax(valid.to_numpy()))
-        restart_idx.append(first)  # first valid reading of the sensor
         for _, g in gaps.iterrows():
             if g["length"] >= C.RESTART_MIN_GAP and g["i_end"] < len(df):
                 restart_idx.append(int(g["i_end"]))
@@ -345,8 +398,10 @@ def clean(raw: pd.DataFrame | None = None, interp_limit: int = C.INTERP_LIMIT):
     clog = ChangeLog()
     raw = read_raw() if raw is None else raw
     df = basic_parse(raw, clog)
+    df = commissioning(df, clog)
     df = plausibility(df, clog)
     df = physical_fixes(df, clog)
+    df = spikes(df, clog)
     df = warmup_artifacts(df, clog)
     df, longest = stuck_values(df, clog)
     df = sun_flag(df, clog)

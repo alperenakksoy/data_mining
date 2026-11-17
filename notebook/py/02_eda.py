@@ -331,14 +331,19 @@ P.save(fig, "02_correlation.png"); plt.show()
 
 # %% [markdown]
 # The seasonal cycle dominates any correlation of raw temperatures (everything is warm in
-# summer). To measure how fast the building *reacts* to weather, we remove the seasonal
-# component (deviation from a centred 7-day mean) and correlate the outside temperature at
-# time *t* with each indoor temperature at *t + lag* for lags 0–48 h (hourly means; outside
-# readings flagged as direct sun are excluded).
+# summer), and the daily cycle creates artificial peaks at multiples of 24 h. To measure how
+# fast the building *reacts to weather*, we (1) take hourly means (outside readings flagged
+# as direct sun excluded), (2) smooth them with a centred 24-hour mean to remove the daily
+# cycle, (3) subtract a centred 7-day mean to remove the season. The remaining "weather
+# anomaly" of the outside temperature at time *t* is correlated with each indoor anomaly
+# at *t + lag* for lags 0–48 h.
 
 # %%
-hourly = df[temp_cols].where(~df["flag_sun_AU"].to_numpy()[:, None] | (np.array(temp_cols) != "temp_AU")).resample("h").mean()
-anom = hourly - hourly.rolling(24 * 7, center=True, min_periods=24 * 4).mean()
+hourly = df[temp_cols].copy()
+hourly.loc[df["flag_sun_AU"], "temp_AU"] = np.nan
+hourly = hourly.resample("h").mean()
+smooth = hourly.rolling(24, center=True, min_periods=18).mean()                  # remove daily cycle
+anom = smooth - hourly.rolling(24 * 7, center=True, min_periods=24 * 4).mean()   # remove season
 lags = range(0, 49)
 lag_corr = pd.DataFrame({s: [anom["temp_AU"].corr(anom[f"temp_{s}"].shift(-k)) for k in lags] for s in C.INDOOR}, index=lags)
 fig, ax = plt.subplots(figsize=(10, 4))
@@ -361,12 +366,12 @@ results.update(lag_organ_h=int(lag_corr["O1"].idxmax()), lag_basement_h=int(lag_
 # **Decision (correlation and lag):** daily indoor temperatures are almost collinear,
 # so they carry little independent information → features use *differences*
 # (inside − outside, surface − air, inside − outside absolute humidity) rather than raw
-# levels. The attic follows the weather immediately (lag 0, correlation 0.9). The nave
-# (organ, walls, north-west art objects) and the basement respond with a delay of about
-# **one day (22–25 h)** and only weakly. The upper south art-object sensor reacts
-# immediately (lag 0, correlation 0.7) and has a 4–6 °C daily cycle: it sits near the
-# south window and is exposed to sun, so its air temperature is not representative of the
-# nave; this is reported as a limitation and as a conservation issue (sun on art objects).
-# For early warning this means a 24-hour horizon is meaningful: today's weather is
-# tomorrow's indoor climate. The model in notebook 04 therefore uses 24-hour means and
-# changes of outside conditions.
+# levels. The attic follows the weather almost immediately (lag ≈ 1 h, correlation 0.94).
+# The nave (organ, walls) and the basement respond with a delay of **about one day
+# (18–27 h)**, the north-west art objects (thick corner masonry) after about 31 h. The
+# upper south art-object sensor reacts within an hour (correlation 0.79) and has a 4–6 °C
+# daily cycle: it sits near the south window and is exposed to sun, so its air temperature
+# is not representative of the nave; we report this as a limitation and as a conservation
+# issue (sun on art objects). For early warning this means a 24-hour horizon is
+# meaningful: today's weather is tomorrow's indoor climate. The model in notebook 04
+# therefore uses 24-hour means and changes of outside conditions.

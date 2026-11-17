@@ -58,8 +58,8 @@ def risk_color(level) -> str:
 # Floor plan
 # --------------------------------------------------------------------------
 # Approximate sensor positions on the schematic of the brief (x to the east, y to the north)
-PLAN_POS = {"AU": (0.9, 5.0), "O1": (2.3, 5.0), "K1": (2.9, 7.5), "AWn": (6.3, 7.5),
-            "K2": (6.0, 2.5), "AWs": (6.6, 2.5), "AWo": (13.3, 5.0)}
+PLAN_POS = {"AU": (0.7, 5.0), "O1": (2.4, 5.0), "K1": (2.9, 7.5), "AWn": (6.3, 7.5),
+            "K2": (6.0, 2.5), "AWs": (6.6, 2.5), "AWo": (13.0, 5.0)}
 
 
 def floor_plan(levels: dict, title: str, ax=None, labels: dict | None = None):
@@ -85,28 +85,32 @@ def floor_plan(levels: dict, title: str, ax=None, labels: dict | None = None):
     ax.text(7.0, 5.0, "Nave", ha="center", va="center", color="#7d93ad", fontsize=13, style="italic")
     ax.annotate("N", xy=(0.3, 3.3), xytext=(0.3, 1.6), ha="center", fontsize=11, fontweight="bold",
                 arrowprops=dict(arrowstyle="-|>", color=INK2, lw=1.5))
-    offsets = {"AU": (0, -1.0), "O1": (0.25, -0.9), "K1": (0, 0.75), "AWn": (0, 0.75),
-               "K2": (-0.9, -0.95), "AWs": (0.9, -0.95), "AWo": (0.5, -1.5)}
+    offsets = {"AU": (-0.3, 1.0), "O1": (0.5, 0, "left"), "K1": (0, 0.75), "AWn": (0, 0.75),
+               "K2": (-0.9, -0.95), "AWs": (0.9, -0.95), "AWo": (0.5, 0, "left")}
     for s, (x, y) in PLAN_POS.items():
-        lvl = levels.get(s, np.nan)
-        ax.add_patch(Circle((x, y), 0.32, fc=risk_color(lvl), ec="white", lw=2, zorder=5))
-        dx, dy = offsets[s]
+        if s == "AU":   # outside air is the reference, not a risk location
+            ax.add_patch(Circle((x, y), 0.3, fc="white", ec=INK2, lw=1.5, zorder=5))
+        else:
+            ax.add_patch(Circle((x, y), 0.32, fc=risk_color(levels.get(s, np.nan)), ec="white", lw=2, zorder=5))
+        dx, dy, *ha = offsets[s]
         txt = labels.get(s, name(s)) if labels else name(s)
-        ax.text(x + dx, y + dy, txt, ha="center", va="center", fontsize=8.5, color=INK, zorder=6)
+        ax.text(x + dx, y + dy, txt, ha=ha[0] if ha else "center", va="center", fontsize=8.5, color=INK, zorder=6,
+                bbox=dict(fc="white", ec="none", alpha=0.75, pad=1) if s in ("O1", "AU") else None)
     # attic and basement boxes
     for i, s in enumerate(["D1", "Ke1"]):
-        bx, by = 14.6, 6.0 - i * 2.6
+        bx, by = 15.6, 6.0 - i * 2.6
         ax.add_patch(FancyBboxPatch((bx, by), 2.6, 1.6, boxstyle="round,pad=0.05", fc="#f4f3f0", ec="#b8b7b1"))
         lvl = levels.get(s, np.nan)
         ax.add_patch(Circle((bx + 0.5, by + 0.8), 0.32, fc=risk_color(lvl), ec="white", lw=2, zorder=5))
         txt = labels.get(s, name(s)) if labels else name(s)
         ax.text(bx + 1.0, by + 0.8, txt, va="center", fontsize=8.5, color=INK)
-    ax.text(14.6, 7.9, "Not on the ground plan", fontsize=8, color=INK2)
+    ax.text(15.6, 7.9, "Not on the ground plan", fontsize=8, color=INK2)
     handles = [plt.Line2D([], [], marker="o", ls="", ms=10, mfc=STATUS[k], mec="white", label=lab)
                for k, lab in [("high", "High risk"), ("medium", "Medium risk"), ("low", "Low risk"),
                               ("unknown", "No data")]]
-    ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, -0.08), ncol=4, fontsize=9)
-    ax.set_xlim(-0.2, 17.5)
+    handles.append(plt.Line2D([], [], marker="o", ls="", ms=10, mfc="white", mec=INK2, label="Outside (reference)"))
+    ax.legend(handles=handles, loc="lower center", bbox_to_anchor=(0.5, -0.08), ncol=5, fontsize=9)
+    ax.set_xlim(-0.4, 18.4)
     ax.set_ylim(0.6, 8.9)
     ax.set_title(title)
     return fig, ax
@@ -122,7 +126,7 @@ def calendar_heatmap(values: pd.DataFrame, title: str, cbar_label: str, ax=None,
     data = values.T
     m = np.ma.masked_invalid(data.to_numpy(dtype=float))
     cm = cmap.copy()
-    cm.set_bad("#e4e3df")
+    cm.set_bad("#b8b7b1")
     im = ax.imshow(m, aspect="auto", cmap=cm, vmin=0, vmax=vmax, interpolation="nearest")
     ax.set_yticks(range(data.shape[0]), [name(s) if s in C.SENSORS else s for s in data.index])
     cols = list(data.columns)

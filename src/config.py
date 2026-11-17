@@ -79,6 +79,21 @@ PLAUSIBLE = {
     "abs_hum": (0.0, 40.0),
     "dew_point": (-40.0, 35.0),
 }
+# Installation day: until 13:40 local time on 19 Jan 2024 all sensors read 19-24 degC
+# together (they were still at the installation bench), afterwards they settle in place.
+COMMISSIONING_END = "2024-01-19 14:00"
+# The organ air sensor reads 3.5 degC above its own surface sensor overnight and then
+# drops by 2.7 degC within 20 min at 08:40 on 20 Jan 2024 while the surface temperature
+# does not change at all: the air sensor was moved to its final position.
+MANUAL_EXCLUSIONS = [
+    dict(sensor="O1", measures=["temp", "rh", "abs_hum", "dew_point"],
+         start="2024-01-19 14:00", end="2024-01-20 08:20",
+         reason="organ air sensor not yet in final position (step change without surface response)"),
+]
+# Isolated glitches: one reading where air temperature AND relative humidity jump and
+# both return at the next reading (seen at the organ, e.g. 8 Nov 2024 04:20).
+SPIKE_TEMP = 0.8                 # degC deviation from the mean of both neighbours
+SPIKE_RH = 5.0                   # % deviation from the mean of both neighbours
 INTERP_LIMIT = 3                 # max gap length (readings) that is interpolated = 1 h
 WARMUP_READINGS = 6              # 2 h settling time after a sensor (re)start
 RESTART_MIN_GAP = 18             # a gap >= 6 h (18 readings) counts as a restart
