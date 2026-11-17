@@ -1,0 +1,10 @@
+code,client,level,has_surface,temp,rh,surf_temp,abs_hum,dew_point
+AU,Outside air,outside,False,1,1,0,1,1
+O1,Organ,upper,True,1,1,1,1,1
+AWn,North exterior wall (lower level),lower,True,1,1,1,1,1
+AWs,South exterior wall (lower level),lower,True,1,1,1,1,1
+AWo,East exterior wall (lower level),lower,True,1,1,1,1,1
+K1,"Art objects, north-west corner",lower,True,1,1,1,1,1
+K2,"Art objects, south wall",upper,False,1,1,0,1,1
+D1,Attic,attic,False,1,1,0,1,1
+Ke1,Basement storage area,basement,False,1,1,0,1,1

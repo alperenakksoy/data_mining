@@ -1,0 +1,5 @@
+,event readings,episodes
+"row shift (3 rows), raw, missing rows dropped",112,38
+"time-based, raw (no cleaning)",111,38
+"time-based, clean, without interpolated values",71,23
+"time-based, clean (main)",74,23

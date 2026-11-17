@@ -1,0 +1,83 @@
+step,column,n_values,action,reason
+drop_columns,"result,table",49032,dropped,technical InfluxDB export columns
+missing_code,temp_AU,561,-255 -> NaN,logger missing value code
+missing_code,rh_AU,561,-255 -> NaN,logger missing value code
+missing_code,abs_hum_AU,561,-255 -> NaN,logger missing value code
+missing_code,dew_point_AU,561,-255 -> NaN,logger missing value code
+missing_code,temp_O1,97,-255 -> NaN,logger missing value code
+missing_code,rh_O1,97,-255 -> NaN,logger missing value code
+missing_code,surf_temp_O1,528,-255 -> NaN,logger missing value code
+missing_code,abs_hum_O1,97,-255 -> NaN,logger missing value code
+missing_code,dew_point_O1,97,-255 -> NaN,logger missing value code
+missing_code,temp_AWn,40911,-255 -> NaN,logger missing value code
+missing_code,rh_AWn,40911,-255 -> NaN,logger missing value code
+missing_code,surf_temp_AWn,40911,-255 -> NaN,logger missing value code
+missing_code,abs_hum_AWn,40911,-255 -> NaN,logger missing value code
+missing_code,dew_point_AWn,40911,-255 -> NaN,logger missing value code
+missing_code,temp_K1,18570,-255 -> NaN,logger missing value code
+missing_code,rh_K1,18570,-255 -> NaN,logger missing value code
+missing_code,surf_temp_K1,12490,-255 -> NaN,logger missing value code
+missing_code,abs_hum_K1,18570,-255 -> NaN,logger missing value code
+missing_code,dew_point_K1,18570,-255 -> NaN,logger missing value code
+missing_code,temp_AWs,22751,-255 -> NaN,logger missing value code
+missing_code,rh_AWs,22751,-255 -> NaN,logger missing value code
+missing_code,surf_temp_AWs,22751,-255 -> NaN,logger missing value code
+missing_code,abs_hum_AWs,22751,-255 -> NaN,logger missing value code
+missing_code,dew_point_AWs,22751,-255 -> NaN,logger missing value code
+missing_code,temp_AWo,24767,-255 -> NaN,logger missing value code
+missing_code,rh_AWo,24767,-255 -> NaN,logger missing value code
+missing_code,surf_temp_AWo,24767,-255 -> NaN,logger missing value code
+missing_code,abs_hum_AWo,24767,-255 -> NaN,logger missing value code
+missing_code,dew_point_AWo,24767,-255 -> NaN,logger missing value code
+missing_code,temp_K2,124,-255 -> NaN,logger missing value code
+missing_code,rh_K2,124,-255 -> NaN,logger missing value code
+missing_code,abs_hum_K2,124,-255 -> NaN,logger missing value code
+missing_code,dew_point_K2,124,-255 -> NaN,logger missing value code
+missing_code,temp_D1,1528,-255 -> NaN,logger missing value code
+missing_code,rh_D1,1528,-255 -> NaN,logger missing value code
+missing_code,abs_hum_D1,1528,-255 -> NaN,logger missing value code
+missing_code,dew_point_D1,1528,-255 -> NaN,logger missing value code
+missing_code,temp_Ke1,9305,-255 -> NaN,logger missing value code
+missing_code,rh_Ke1,9305,-255 -> NaN,logger missing value code
+missing_code,abs_hum_Ke1,9305,-255 -> NaN,logger missing value code
+missing_code,dew_point_Ke1,9305,-255 -> NaN,logger missing value code
+trim,index,44,leading/trailing empty rows removed,no sensor reported
+commissioning,all,366,17 rows before 2024-01-19 14:00 local removed,sensors still at the installation bench
+manual_exclusion,"temp_O1,rh_O1,abs_hum_O1,dew_point_O1",224,2024-01-19 14:00 - 2024-01-20 08:20 -> NaN,organ air sensor not yet in final position (step change without surface response)
+physical_fix,rh_AU,10541,clipped to 100 %,sensor saturation
+physical_fix,dew_point_AU,10505,set to air temperature,dew point above air temperature
+physical_fix,abs_hum_AU,10541,recomputed at 100 %,consistency with clipped humidity
+spike,"temp_O1,rh_O1",14,joint single-reading glitch -> NaN,isolated sensor glitch (temperature and humidity jump and return)
+warmup,temp_AU,12,first 6 readings after 2 (re)starts -> NaN,sensor settling after installation / outage
+warmup,temp_O1,6,first 6 readings after 1 (re)starts -> NaN,sensor settling after installation / outage
+warmup,temp_AWn,6,first 6 readings after 1 (re)starts -> NaN,sensor settling after installation / outage
+warmup,temp_AWs,12,first 6 readings after 2 (re)starts -> NaN,sensor settling after installation / outage
+warmup,temp_AWo,18,first 6 readings after 3 (re)starts -> NaN,sensor settling after installation / outage
+warmup,temp_K1,6,first 6 readings after 1 (re)starts -> NaN,sensor settling after installation / outage
+warmup,temp_D1,90,first 6 readings after 15 (re)starts -> NaN,sensor settling after installation / outage
+warmup,temp_Ke1,6,first 6 readings after 1 (re)starts -> NaN,sensor settling after installation / outage
+sun_flag,temp_AU,295,flagged (kept),suspected direct sun on the sensor
+timezone,index,48971,UTC -> Europe/Berlin,local time for daily patterns
+interpolate,temp_AU,314,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_AU,314,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_O1,63,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_O1,63,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,surf_temp_O1,478,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_AWn,31,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_AWn,31,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,surf_temp_AWn,31,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_AWs,134,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_AWs,134,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,surf_temp_AWs,134,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_AWo,96,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_AWo,96,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,surf_temp_AWo,96,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_K1,285,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_K1,285,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,surf_temp_K1,351,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_K2,75,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_K2,75,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_D1,48,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_D1,48,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,temp_Ke1,51,"linear, gaps <= 3 readings",short transmission gaps
+interpolate,rh_Ke1,51,"linear, gaps <= 3 readings",short transmission gaps

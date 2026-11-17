@@ -1,0 +1,7 @@
+location,subset,above LIM now,persistence,tree (all inputs),tree (no rule ingredients)
+Art objects S,all test hours,0.7,0.86,0.91,0.67
+Art objects S,onset hours,0.17,0.0,0.7,0.33
+Basement,all test hours,0.95,0.97,0.92,0.94
+Basement,onset hours,0.31,0.0,0.4,0.28
+Organ,all test hours,0.92,0.95,0.96,0.7
+Organ,onset hours,0.24,0.0,0.73,0.18

@@ -1,0 +1,9 @@
+Location,Overall class,Time at high risk,Time at medium or high risk,Months with high risk > 50 %,Longest high-risk spell (days),Data available
+Basement storage area,high (red),0.5146973773542206,0.6208101787824687,"Jun, Jul, Aug, Sep, Oct, Nov",45.0,0.8120928712911724
+"Art objects, north-west corner",high (red),0.4400546732621713,0.5693504295756313,"May, Jun, Jul, Aug, Sep, Oct, Nov",45.0,0.627473402626044
+Organ,medium (yellow),0.1346609961560481,0.18240369673673018,"Oct, Nov",46.0,0.9987135243307264
+North exterior wall (lower level),high (red),0.29689227367645254,0.3847193219506203,Oct,10.0,0.1662412448183619
+"Art objects, south wall",medium (yellow),0.12995711660200124,0.23916683683888096,Oct,8.0,0.9999795797512814
+South exterior wall (lower level),medium (yellow),0.11928308893183283,0.2090106475692471,none above 50 %,9.0,0.5389107839333483
+Attic,medium (yellow),0.10980235155295208,0.1940031185469257,none above 50 %,7.0,0.9691041636887138
+East exterior wall (lower level),low (green),0.04052443384982122,0.12572438453002344,none above 50 %,5.0,0.49684507157297175
